@@ -1,0 +1,136 @@
+#include "graph1.h"
+
+
+graph1::graph1(int size, int direction)
+{
+	heap = initialize(size + 1);
+	this->size = size;
+	this->direction = direction;
+	Adj = new NODE * [size + 1];
+
+	for (int i = 1; i <= size; i++)
+	{
+		Adj[i] = NULL;
+	}
+	
+	V = new VERTEX[size + 1];
+
+}
+
+
+void graph1::initAdj(int u, int v, float w)
+{
+	NODE* node = new NODE();
+
+	node->v = v;
+	node->w = w;
+	node->next = Adj[u];
+	Adj[u] = node;
+
+	if (direction == 0)
+	{ 
+		NODE* node1 = new NODE();
+
+		node1->v = u;
+		node1->w = w;
+		node1->next = Adj[v];
+		Adj[v] = node1;
+	}
+}
+
+
+void graph1::initDijkstra(int source) 
+{
+	for (int i = 1; i <= size; i++)
+	{
+		V[i].color = 1;
+		V[i].d = 'i';
+		V[i].pi = -1;
+		V[i].pos = NULL;
+	}
+
+	V[source].color = 2;
+	V[source].d = 0;
+
+	ELEMENT* element = new ELEMENT();
+	element->distance = 0;
+	element->vertex = source;
+
+	Insert(heap, element, V, flag);
+}
+
+int graph1::Dijkstra(int source, int destination)
+{
+	initDijkstra(source);
+
+
+	while (heap->size != 0)
+	{
+		int u = ExtractMin(heap, V, flag);
+		V[u].color = 3;
+
+		if (u == destination)
+		{
+			return 0;
+		}
+
+		NODE* nodeV = Adj[u];
+		while (nodeV != NULL)
+		{
+			
+			if (V[nodeV->v].color == 1)
+			{
+				V[nodeV->v].d = V[u].d + nodeV->w;		// v.d = u.d + w(u, v)
+				V[nodeV->v].pi = u;
+				V[nodeV->v].color = 2;
+				
+				ELEMENT* temp = new ELEMENT();
+				temp->distance = V[nodeV->v].d;
+				temp->vertex = nodeV->v;
+
+				Insert(heap, temp, V, flag);
+			}
+
+			else if (V[nodeV->v].d > V[u].d + nodeV->w)
+			{
+				V[nodeV->v].d = V[u].d + nodeV->w;
+				V[nodeV->v].pi = u;
+				DecreaseKey(heap, V[nodeV->v].pos, V[nodeV->v].d, V, flag);
+			}
+
+			nodeV = nodeV->next;
+		}
+	}
+
+	return 1;
+}
+
+
+void graph1::printFunction()
+{
+	for (int i = 1; i <= size; i++)			// printing the test case
+	{
+		NODE* tempNode = Adj[i];
+
+		/*
+		while (tempNode != NULL)
+		{
+			cout << i << " connect to " << tempNode->v << endl;
+			tempNode = tempNode->next;
+		}
+		*/
+	}
+
+	for (int i = 1; i <= size; i++) 
+	{
+		if (V[i].d != 'i') 
+		{
+			cout << i << "'s D = " << V[i].d << endl;
+		}
+		else
+		{
+			cout << i << "'s D = " << "inf" << endl;
+		}
+			
+	}
+}
