@@ -1,0 +1,12 @@
+#pragma once
+#include <string>
+using namespace std;
+
+typedef struct TAG_VERTEX
+{
+	int color;		// 1 is white (undiscovered yet), 2 is grey (discovering), 3 is black (discovered)
+	int pi;			// -1 is nil (all the ancestor is not assigned yet)
+	float d;
+	int pos;
+}VERTEX;
+
